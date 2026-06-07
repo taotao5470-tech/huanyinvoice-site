@@ -281,11 +281,19 @@ body.page-product .footer, body.page-about .footer { display: none; }
 .pd-tagline { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
 
 /* Variant buttons (shared) */
-.variant-selector { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-.variant-btn { padding: 7px 14px; border-radius: 18px; font-size: 12px; font-weight: 600; background: var(--bg-primary); color: var(--text-muted); border: 1px solid var(--border-dark); transition: var(--transition); }
-.variant-btn:hover { color: var(--text-light); border-color: var(--text-muted); }
-.variant-btn.active { background: var(--accent-moss); color: #fff; border-color: var(--accent-moss); }
-.variant-btn.oos { opacity: 0.4; pointer-events: none; }
+.variant-selector { display: grid; gap: 8px; margin-bottom: 14px; }
+.variant-btn { position: relative; width: 100%; min-height: 58px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; background: #152131; color: var(--text-muted); border: 1px solid #304153; transition: var(--transition); display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; text-align: left; }
+.variant-btn:hover { color: var(--text-light); border-color: #556575; transform: translateY(-1px); }
+.variant-btn.active { background: linear-gradient(180deg, rgba(45,125,210,0.26), rgba(21,33,49,0.96)); color: #fff; border-color: var(--accent-moss); box-shadow: 0 0 0 1px rgba(45,125,210,0.25), 0 10px 26px rgba(45,125,210,0.16); }
+.variant-btn.recommended { border-color: rgba(22,199,132,0.7); }
+.variant-btn.recommended.active { background: linear-gradient(180deg, rgba(22,199,132,0.24), rgba(21,33,49,0.96)); border-color: var(--whatsapp); box-shadow: 0 0 0 1px rgba(37,211,102,0.25), 0 10px 26px rgba(37,211,102,0.15); }
+.variant-btn.oos { opacity: 0.45; pointer-events: none; }
+.variant-main { display: grid; gap: 2px; min-width: 0; }
+.variant-name { font-size: 14px; font-weight: 800; color: var(--text-light); }
+.variant-desc { font-size: 11px; font-weight: 500; color: #94a3b2; line-height: 1.3; }
+.variant-badge { align-self: start; padding: 3px 8px; border-radius: 999px; background: rgba(45,125,210,0.14); color: #7bb6f0; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.variant-btn.recommended .variant-badge { background: rgba(37,211,102,0.14); color: #55e3aa; }
+.variant-btn.oos .variant-badge { background: rgba(217,74,74,0.14); color: #d27070; }
 
 /* Specs table (shared) */
 .specs-table { width: 100%; margin-bottom: 12px; border-collapse: collapse; }
@@ -2237,6 +2245,13 @@ const MS_TEXT = {
  'Out of Stock': 'Habis Stok',
  'Low Stock': 'Stok Terhad',
  'In Stock': 'Ada Stok',
+ 'Recommended': 'Disyorkan',
+ 'Premium': 'Premium',
+ 'Recommended for higher retail margin': 'Disyorkan untuk margin jualan lebih tinggi',
+ 'Premium noise cancellation version': 'Versi premium dengan pembatalan bunyi',
+ 'Stable version for wholesale orders': 'Versi stabil untuk pesanan borong',
+ 'Standard version': 'Versi standard',
+ 'Custom order': 'Pesanan khas',
  'Your inquiry is empty. Add products from our catalog.': 'Pertanyaan anda kosong. Tambah produk dari katalog kami.',
  'Hello, I would like to request a quotation:\n\n?? Products:\n': 'Hello, saya ingin meminta sebut harga:\n\n?? Produk:\n',
  '?? Shipping info:': '?? Maklumat penghantaran:',
@@ -2347,7 +2362,7 @@ function navigateToProduct(productId) {
  const p = products.find(p => p.id === productId);
  if (!p) return;
  lastScrollY = window.scrollY;
- const v = p.variants.find(v => v.stock > 0) || p.variants[0];
+ const v = getPreferredVariant(p);
  currentProductId = productId;
  currentVariantId = v.id;
  renderProductPage(productId, v.id);
@@ -2674,6 +2689,32 @@ const products = [
  { id: 'sport-adv', name: { es: 'Cámara Deportiva 4K Avanzada', en: '4K Sports Camera Advanced' }, tagline: { es: '4K · Grado Profesional', en: '4K · Professional Grade' }, cat: 'sports', icon: '📸', featured: false, img: 'sport-adv.png',
   variants: [{ id: 'global', name: 'Standard', specs: { features:'4K HD + 30m Waterproof + Long Battery + Professional Grade Action Camera' }, prices: { small: 65, large: 65 }, stock: 999 }] }
 ];
+
+
+function isRecommendedVariant(variant) {
+ return !!variant && variant.stock > 0 && variant.id === 'anc' && /Global ANC/i.test(variant.name || '');
+}
+
+function getPreferredVariant(product) {
+ return product.variants.find(isRecommendedVariant) || product.variants.find(v => v.stock > 0) || product.variants[0];
+}
+
+function getVariantDescription(variant) {
+ if (!variant) return { es: '', en: '' };
+ if (variant.stock === 0) return variant.stockNote || { es: 'Custom order', en: 'Custom order' };
+ if (isRecommendedVariant(variant)) return { es: 'Recomendado para mayor margen de venta', en: 'Recommended for higher retail margin' };
+ if (/anc/i.test(variant.name || '')) return { es: 'Versi?n premium con cancelaci?n de ruido', en: 'Premium noise cancellation version' };
+ if (/global/i.test(variant.name || '')) return { es: 'Versi?n estable para pedidos mayoristas', en: 'Stable version for wholesale orders' };
+ return { es: 'Versi?n est?ndar', en: 'Standard version' };
+}
+
+function getVariantBadge(variant) {
+ if (!variant) return '';
+ if (variant.stock === 0) return '0 Stock';
+ if (isRecommendedVariant(variant)) return localize({ es: 'Recommended', en: 'Recommended' });
+ if (/anc/i.test(variant.name || '')) return localize({ es: 'Premium', en: 'Premium' });
+ return localize({ es: 'In Stock', en: 'In Stock' });
+}
 
 // ============ CART ============
 let cart = JSON.parse(siteStorage.getItem('huanyin_cart') || '[]');
@@ -3101,7 +3142,7 @@ function renderProducts(filter) {
  }
 
  grid.innerHTML = filtered.map(p => {
-  const bestVariant = p.variants.find(v => v.stock > 0) || p.variants[0];
+  const bestVariant = getPreferredVariant(p);
   const price = bestVariant.prices.small || bestVariant.prices.large || 0;
   const allOOS = p.variants.every(v => v.stock === 0);
   const stockClass = allOOS ? 'oos' : bestVariant.stock < 500 ? 'low-stock' : 'in-stock';
@@ -3185,11 +3226,18 @@ function renderProductPage(productId, variantId) {
    <p class="pd-tagline">${localize(p.tagline)}</p>
 
    <div class="variant-selector">
-    ${p.variants.map(vr => {
-     const oos = vr.stock === 0;
-     return `<button class="variant-btn${vr.id === variantId ? ' active' : ''}${oos ? ' oos' : ''}" onclick="switchVariant('${p.id}', '${vr.id}')" ${oos ? 'disabled' : ''}>${vr.name}${oos ? ' (0 Stock)' : ''}</button>`;
-    }).join('')}
-   </div>
+     ${p.variants.map(vr => {
+      const oos = vr.stock === 0;
+      const recommended = isRecommendedVariant(vr);
+      return `<button class="variant-btn${vr.id === variantId ? ' active' : ''}${oos ? ' oos' : ''}${recommended ? ' recommended' : ''}" onclick="switchVariant('${p.id}', '${vr.id}')" ${oos ? 'disabled' : ''}>
+       <span class="variant-main">
+        <span class="variant-name">${vr.name}</span>
+        <span class="variant-desc">${localize(getVariantDescription(vr))}</span>
+       </span>
+       <span class="variant-badge">${getVariantBadge(vr)}</span>
+      </button>`;
+     }).join('')}
+    </div>
 
    <table class="specs-table">${Object.entries(specs).map(([k, val]) => `<tr><td>${localize(specLabels[k] || { en: k }, k)}</td><td>${val}</td></tr>`).join('')}</table>
 
