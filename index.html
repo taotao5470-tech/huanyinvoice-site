@@ -321,10 +321,17 @@ body.page-product .footer, body.page-about .footer { display: none; }
 .price-tier.selected .tier-check { display: inline; }
 
 /* Packaging preview */
-.pack-preview { width: 100%; height: auto; min-height: 60px; border-radius: var(--radius-xs); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; overflow: hidden; transition: opacity 0.15s ease; }
+.pack-preview { width: 100%; height: auto; min-height: 60px; border-radius: var(--radius-xs); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; overflow: hidden; transition: opacity 0.15s ease; cursor: zoom-in; position: relative; }
 .pack-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.pack-preview::after { content: "View"; position: absolute; right: 8px; bottom: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,0.62); color: #fff; font-size: 10px; font-weight: 700; opacity: 0; transition: opacity 0.2s ease; }
+.pack-preview:hover::after { opacity: 1; }
 .pack-preview .pack-preview-icon { font-size: 36px; opacity: 0.4; }
 .pack-preview .pack-preview-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; text-align: center; }
+.pack-viewer { display: none; position: fixed; inset: 0; z-index: 3200; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; padding: 24px; }
+.pack-viewer.open { display: flex; }
+.pack-viewer img { max-width: min(92vw, 980px); max-height: 86vh; object-fit: contain; border-radius: var(--radius-sm); box-shadow: 0 24px 70px rgba(0,0,0,0.55); background: #fff; }
+.pack-viewer-close { position: absolute; top: 18px; right: 24px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.12); color: #fff; font-size: 28px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+.pack-viewer-close:hover { background: rgba(255,255,255,0.22); }
 
 /* Total price display */
 .pd-total { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: var(--radius-xs); background: rgba(125,148,116,0.08); border: 1px solid rgba(125,148,116,0.2); margin-bottom: 12px; }
@@ -2060,6 +2067,10 @@ src="https://www.facebook.com/tr?id=1464034677999267&ev=PageView&noscript=1"
  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20a1 1 0 100-2 1 1 0 000 2zM20 20a1 1 0 100-2 1 1 0 000 2z"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.94-1.49L23 6H6"/></svg>
  <span class="cart-count" id="cartCount" style="display:none">0</span>
 </button>
+<div class="pack-viewer" id="packViewer" onclick="closePackViewer()">
+ <button class="pack-viewer-close" onclick="closePackViewer(event)" aria-label="Close">&times;</button>
+ <img id="packViewerImg" src="" alt="Packaging preview">
+</div>
 
 <!-- ============ CART PANEL ============ -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
@@ -2794,20 +2805,19 @@ function getPdQty() {
  input.value = v;
  return v;
 }
-function pdQtyDown() {
+function pdQtyStep(delta) {
  const input = document.getElementById('pdQtyInput');
  if (!input) return;
- let v = (parseInt(input.value) || 1) - 1;
+ let v = (parseInt(input.value) || 1) + delta;
  if (v < 1) v = 1;
  input.value = v;
  updatePriceDisplay();
 }
+function pdQtyDown() {
+ pdQtyStep(-1);
+}
 function pdQtyUp() {
- const input = document.getElementById('pdQtyInput');
- if (!input) return;
- let v = (parseInt(input.value) || 1) + 1;
- input.value = v;
- updatePriceDisplay();
+ pdQtyStep(1);
 }
 function pdQtyValidate() {
  const input = document.getElementById('pdQtyInput');
@@ -3243,8 +3253,8 @@ function renderProductPage(productId, variantId) {
 
    ${(p.cat === 'airpods' || p.id === 'airpods-pro-2' || p.id === 'airpods-pro-3') ? `
    <div class="pack-label" data-es="Empaque" data-en="Packaging">Empaque</div>
-   <div class="pack-preview" id="packPreview" style="background:none;border:none;height:auto;padding:0">
-    <img src="pack-normal.png" style="width:100%;max-height:120px;object-fit:contain;border-radius:8px" alt="">
+   <div class="pack-preview" id="packPreview" onclick="openPackViewer()" style="background:none;border:none;height:auto;padding:0">
+    <img src="pack-normal.png" data-pack-src="pack-normal.png" style="width:100%;max-height:120px;object-fit:contain;border-radius:8px" alt="">
    </div>
    <div class="packaging-options">
     <div class="pack-option selected" onclick="selectPack(this)" data-pack="normal"><span class="pack-icon">📦</span><span data-es="Normal" data-en="Normal">Normal</span></div>
@@ -3275,13 +3285,15 @@ function renderProductPage(productId, variantId) {
     }
    </div>
 
-   <div class="pd-qty-row" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-    <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px" data-es="Cantidad" data-en="Quantity">Cantidad</span>
-    <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border-dark);border-radius:6px;overflow:hidden">
-     <button onclick="pdQtyDown()" style="width:30px;height:30px;background:var(--bg-primary);color:var(--text-light);font-size:16px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer">−</button>
-     <input id="pdQtyInput" type="number" value="40" min="1" step="1" style="width:60px;height:30px;text-align:center;background:var(--bg-primary);color:var(--text-light);border:none;border-left:1px solid var(--border-dark);border-right:1px solid var(--border-dark);font-size:14px;font-weight:600;font-family:inherit;-moz-appearance:textfield" onchange="pdQtyValidate()" oninput="pdQtyValidate()">
-     <button onclick="pdQtyUp()" style="width:30px;height:30px;background:var(--bg-primary);color:var(--text-light);font-size:16px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer">+</button>
-    </div>
+    <div class="pd-qty-row" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+     <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px" data-es="Cantidad" data-en="Quantity">Cantidad</span>
+     <div style="display:flex;align-items:center;gap:0;border:1px solid var(--border-dark);border-radius:6px;overflow:hidden">
+      <button onclick="pdQtyStep(-10)" style="width:42px;height:30px;background:var(--bg-primary);color:var(--text-light);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;border:none;border-right:1px solid var(--border-dark);cursor:pointer">-10</button>
+      <button onclick="pdQtyDown()" style="width:30px;height:30px;background:var(--bg-primary);color:var(--text-light);font-size:16px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer">−</button>
+      <input id="pdQtyInput" type="number" value="40" min="1" step="1" style="width:60px;height:30px;text-align:center;background:var(--bg-primary);color:var(--text-light);border:none;border-left:1px solid var(--border-dark);border-right:1px solid var(--border-dark);font-size:14px;font-weight:600;font-family:inherit;-moz-appearance:textfield" onchange="pdQtyValidate()" oninput="pdQtyValidate()">
+      <button onclick="pdQtyUp()" style="width:30px;height:30px;background:var(--bg-primary);color:var(--text-light);font-size:16px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer">+</button>
+      <button onclick="pdQtyStep(10)" style="width:42px;height:30px;background:var(--bg-primary);color:var(--text-light);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;border:none;border-left:1px solid var(--border-dark);cursor:pointer">+10</button>
+     </div>
     <span style="font-size:10px;color:var(--text-muted)" data-es="Recomendado: 40+ unidades" data-en="Recommended: 40+ units">Recomendado: 40+ unidades</span>
    </div>
 
@@ -3392,6 +3404,24 @@ function switchVariant(productId, variantId) {
  if (v) { renderProductPage(productId, variantId); }
 }
 
+function openPackViewer() {
+ const previewImg = document.querySelector('#packPreview img');
+ const viewer = document.getElementById('packViewer');
+ const viewerImg = document.getElementById('packViewerImg');
+ if (!previewImg || !viewer || !viewerImg) return;
+ viewerImg.src = previewImg.getAttribute('data-pack-src') || previewImg.src;
+ viewer.classList.add('open');
+ document.body.style.overflow = 'hidden';
+}
+
+function closePackViewer(event) {
+ if (event) event.stopPropagation();
+ const viewer = document.getElementById('packViewer');
+ if (!viewer) return;
+ viewer.classList.remove('open');
+ document.body.style.overflow = '';
+}
+
 function selectPack(el) {
  el.parentElement.querySelectorAll('.pack-option').forEach(o => o.classList.remove('selected'));
  el.classList.add('selected');
@@ -3402,7 +3432,8 @@ function selectPack(el) {
  // Fade out, swap, fade in
  preview.style.opacity = '0';
  setTimeout(function() {
-  preview.innerHTML = '<img src="'+(imgs[pack]||imgs.normal)+'" style="width:100%;max-height:120px;object-fit:contain;border-radius:8px" alt="">';
+  const src = imgs[pack] || imgs.normal;
+  preview.innerHTML = '<img src="'+src+'" data-pack-src="'+src+'" style="width:100%;max-height:120px;object-fit:contain;border-radius:8px" alt="">';
   requestAnimationFrame(function() { preview.style.opacity = '1'; });
  }, 120);
 }
