@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-52M06C1RJR"></script>
@@ -1425,8 +1425,9 @@ src="https://www.facebook.com/tr?id=1464034677999267&ev=PageView&noscript=1"
 		  <a href="#" onclick="navigateToVerification(event)" data-es="Control de Calidad / Posventa" data-en="3-Level QC / After-Sales">Control de Calidad / Posventa</a>
 		  <a href="#" onclick="navigateToAfterSales(event)" data-es="Consulta Posventa" data-en="After-Sales Lookup">Consulta Posventa</a>
         <div class="lang-toggle">
-   <button class="active" data-lang="es">ES</button>
-   <button data-lang="en">EN</button>
+   <button data-lang="es">ES</button>
+   <button class="active" data-lang="en">EN</button>
+   <button data-lang="ms">MS</button>
   </div>
  </div>
  <div class="nav-actions">
@@ -2109,44 +2110,209 @@ src="https://www.facebook.com/tr?id=1464034677999267&ev=PageView&noscript=1"
 
 <script>
 // ============ LANGUAGE SYSTEM ============
-let currentLang = localStorage.getItem('huanyin_lang') || 'es';
+const SUPPORTED_LANGS = ['en', 'es', 'ms'];
+const memoryStorage = {};
+const siteStorage = {
+ getItem(key) {
+  try {
+   return window.localStorage ? window.localStorage.getItem(key) : memoryStorage[key];
+  } catch (e) {
+   return memoryStorage[key];
+  }
+ },
+ setItem(key, value) {
+  memoryStorage[key] = value;
+  try {
+   if (window.localStorage) window.localStorage.setItem(key, value);
+  } catch (e) {}
+ }
+};
+let currentLang = siteStorage.getItem('huanyin_lang') || 'en';
+if (!SUPPORTED_LANGS.includes(currentLang)) currentLang = 'en';
+
+const MS_TEXT = {
+ 'Home': 'Laman Utama',
+ 'Products': 'Produk',
+ 'Why Us / Reviews': 'Kenapa Kami / Ulasan',
+ 'Company / Certifications': 'Syarikat / Pensijilan',
+ '3-Level QC / After-Sales': 'QC 3 Tahap / Selepas Jualan',
+ 'After-Sales Lookup': 'Semakan Selepas Jualan',
+ 'B2B Electronics Supplier ? Direct from Factory': 'Pembekal Elektronik B2B - Terus dari Kilang',
+ 'Integrated supply chain for smart devices': 'Rantaian bekalan bersepadu untuk peranti pintar',
+ 'R&D, sourcing, processing, sales, and after-sales service from Shenzhen for global distributors.': 'R&D, sumber produk, pemprosesan, jualan dan servis selepas jualan dari Shenzhen untuk pengedar global.',
+ 'Industrial park': 'Taman industri',
+ 'In-house team': 'Pasukan dalaman',
+ 'Solutions + R&D': 'Penyelesaian + R&D',
+ 'Your professional supply partner for <em>online and offline sales</em>': 'Rakan bekalan profesional anda untuk <em>jualan online dan offline</em>',
+ 'We work side by side with you to build stable, efficient, win-win cooperation: ready-to-sell products, OEM packaging, 3-stage QC, and DDP delivery in 5-7 days.': 'Kami bekerjasama dengan anda untuk membina kerjasama yang stabil dan cekap: produk sedia jual, pembungkusan OEM, QC 3 tahap dan penghantaran DDP dalam 5-7 hari.',
+ 'View B2B Catalog': 'Lihat Katalog B2B',
+ 'Request a Quote': 'Minta Sebut Harga',
+ 'View Client Reviews': 'Lihat Ulasan Pelanggan',
+ 'B2B Clients': 'Pelanggan B2B',
+ 'Countries': 'Negara',
+ 'Units / month': 'Unit / bulan',
+ 'Drag to rotate': 'Seret untuk putar',
+ 'avg. damage': 'purata kerosakan',
+ 'fast mockup': 'mockup pantas',
+ 'delivery': 'penghantaran',
+ 'Deep ANC': 'ANC mendalam',
+ 'Spatial audio': 'Audio spatial',
+ 'Powerful bass': 'Bass kuat',
+ 'Touch control': 'Kawalan sentuh',
+ 'Years Exporting': 'Tahun Mengeksport',
+ 'Active B2B Clients': 'Pelanggan B2B Aktif',
+ 'Export Countries': 'Negara Eksport',
+ 'Units per Month': 'Unit Sebulan',
+ 'Global Certifications': 'Pensijilan Global',
+ 'Min. Order (units)': 'Pesanan Minimum (unit)',
+ 'CATALOG': 'KATALOG',
+ 'Featured Products': 'Produk Pilihan',
+ 'Premium electronics curated for distributors. Every product passes 3-stage quality inspection.': 'Elektronik premium untuk pengedar. Setiap produk melalui pemeriksaan kualiti 3 tahap.',
+ 'Watches': 'Jam Tangan',
+ 'Lifestyle': 'Gaya Hidup',
+ 'Security Cam.': 'Kamera Keselamatan',
+ 'Sports Cam.': 'Kamera Sukan',
+ 'GLOBAL REACH': 'CAPAIAN GLOBAL',
+ 'Connecting China to the World': 'Menghubungkan China ke Seluruh Dunia',
+ 'Three strategically located warehouses to serve each region with fast local delivery.': 'Tiga gudang strategik untuk melayani setiap rantau dengan penghantaran tempatan yang pantas.',
+ 'PROCESS': 'PROSES',
+ 'How It Works': 'Cara Ia Berfungsi',
+ 'Simple 6-step process from selection to delivery.': 'Proses ringkas 6 langkah dari pemilihan hingga penghantaran.',
+ 'Select': 'Pilih',
+ 'Browse catalog': 'Lihat katalog',
+ 'Quote': 'Sebut harga',
+ 'Confirm with sales': 'Sahkan dengan jualan',
+ 'Packaging': 'Pembungkusan',
+ 'Customization': 'Penyesuaian',
+ 'Payment': 'Pembayaran',
+ 'Local transfer': 'Pindahan tempatan',
+ 'Shipping': 'Penghantaran',
+ '5-7 days DDP': '5-7 hari DDP',
+ 'Delivery': 'Serahan',
+ 'Receive goods': 'Terima barang',
+ 'BUYER SUPPORT': 'SOKONGAN PEMBELI',
+ 'Support before and after every order': 'Sokongan sebelum dan selepas setiap pesanan',
+ 'A buying list built for your channel': 'Senarai pembelian untuk saluran anda',
+ 'Samples & selection': 'Sampel & pemilihan',
+ 'Retail-ready packaging': 'Pembungkusan sedia jual',
+ 'Batch control': 'Kawalan setiap batch',
+ 'Simple reorder': 'Ulang pesanan mudah',
+ 'Back to Products': 'Kembali ke Produk',
+ 'Back to Home': 'Kembali ke Laman Utama',
+ 'ABOUT US': 'TENTANG KAMI',
+ 'About Us': 'Tentang Kami',
+ 'Certifications': 'Pensijilan',
+ 'Team': 'Pasukan',
+ 'Professional Smart Device Manufacturer': 'Pengeluar Peranti Pintar Profesional',
+ 'Certifications &amp; Quality': 'Pensijilan &amp; Kualiti',
+ 'Our Team': 'Pasukan Kami',
+ 'Contact Support via WhatsApp': 'Hubungi Sokongan melalui WhatsApp',
+ 'Premium consumer electronics for global distributors.': 'Elektronik pengguna premium untuk pengedar global.',
+ 'Address': 'Alamat',
+ 'Office map: Longteli Technology Building, Shenzhen': 'Peta pejabat: Longteli Technology Building, Shenzhen',
+ 'Company': 'Syarikat',
+ 'Support': 'Sokongan',
+ 'My Inquiry': 'Pertanyaan Saya',
+ 'Total items:': 'Jumlah item:',
+ 'Send via WhatsApp': 'Hantar melalui WhatsApp',
+ 'Keep Browsing': 'Terus Melihat',
+ 'Shipping Address': 'Alamat Penghantaran',
+ '? Country *': '- Negara *',
+ '? State *': '- Negeri *',
+ 'City *': 'Bandar *',
+ 'Postal Code *': 'Poskod *',
+ 'Full Address': 'Alamat Penuh',
+ 'Contact Name': 'Nama Kontak',
+ 'Please fill in Country, State, City and Postal Code.': 'Sila isi Negara, Negeri, Bandar dan Poskod.',
+ 'View Detail': 'Lihat Butiran',
+ 'Video': 'Video',
+ 'Standard': 'Standard',
+ 'OEM Custom': 'OEM Khas',
+ 'Estimated Total': 'Jumlah Anggaran',
+ 'USD ? Quote Price': 'USD ? Harga Sebut Harga',
+ 'Quantity': 'Kuantiti',
+ 'Recommended: 40+ units': 'Disyorkan: 40+ unit',
+ 'Calculate Shipping': 'Kira Penghantaran',
+ 'Add to Inquiry': 'Tambah ke Pertanyaan',
+ 'Out of Stock': 'Habis Stok',
+ 'Low Stock': 'Stok Terhad',
+ 'In Stock': 'Ada Stok',
+ 'Your inquiry is empty. Add products from our catalog.': 'Pertanyaan anda kosong. Tambah produk dari katalog kami.',
+ 'Hello, I would like to request a quotation:\n\n?? Products:\n': 'Hello, saya ingin meminta sebut harga:\n\n?? Produk:\n',
+ '?? Shipping info:': '?? Maklumat penghantaran:',
+ 'Country': 'Negara',
+ 'State': 'Negeri',
+ 'City': 'Bandar',
+ 'Zip': 'Poskod',
+ 'Full Address': 'Alamat Penuh',
+ 'Contact': 'Kontak',
+ 'Please provide:\n? Price quotation (USD)\n? Shipping cost (DDP)\n? Delivery time': 'Sila berikan:\n? Sebut harga (USD)\n? Kos penghantaran (DDP)\n? Masa penghantaran',
+ 'Added!': 'Ditambah!'
+};
+
+function localize(value, fallback) {
+ if (value === null || value === undefined) return fallback || '';
+ if (typeof value === 'string') return currentLang === 'ms' ? (MS_TEXT[value] || value) : value;
+ if (value[currentLang] !== null && value[currentLang] !== undefined) return value[currentLang];
+ const base = value.en !== null && value.en !== undefined ? value.en : (value.es !== null && value.es !== undefined ? value.es : fallback || '');
+ return currentLang === 'ms' ? (MS_TEXT[base] || base) : base;
+}
+
+function translateElement(el) {
+ const fallback = el.getAttribute('data-en');
+ if (currentLang === 'ms') {
+  const explicit = el.getAttribute('data-ms');
+  el.innerHTML = explicit !== null ? explicit : localize(fallback);
+  return;
+ }
+ const d = el.getAttribute('data-' + currentLang);
+ if (d !== null) el.innerHTML = d;
+}
+
+function translatePlaceholder(el) {
+ const fallback = el.getAttribute('data-en-placeholder');
+ if (currentLang === 'ms') {
+  const explicit = el.getAttribute('data-ms-placeholder');
+  el.placeholder = explicit !== null ? explicit : localize(fallback);
+  return;
+ }
+ const d = el.getAttribute('data-' + currentLang + '-placeholder');
+ if (d !== null) el.placeholder = d;
+}
+
+function translateFragment(root) {
+ root.querySelectorAll('[data-en]').forEach(translateElement);
+ root.querySelectorAll('[data-en-placeholder]').forEach(translatePlaceholder);
+}
 
 function t(el) {
  if (typeof el === 'string') el = document.querySelector(el);
  if (!el) return;
- const d = el.getAttribute('data-' + currentLang);
- if (d !== null && d !== undefined) el.innerHTML = d;
+ translateElement(el);
 }
 
 function translateAll() {
- document.querySelectorAll('[data-es][data-en]').forEach(el => {
-  const d = el.getAttribute('data-' + currentLang);
-  if (d !== null) el.innerHTML = d;
- });
- // address form placeholder translations
- document.querySelectorAll('[data-es-placeholder][data-en-placeholder]').forEach(el => {
-  el.placeholder = el.getAttribute('data-' + currentLang + '-placeholder');
- });
- // address form select options
+ translateFragment(document);
  const addrCountry = document.getElementById('addrCountry');
  if (addrCountry) {
   const opt0 = addrCountry.querySelector('option[value=""]');
-  if (opt0) opt0.textContent = currentLang === 'es' ? '— País *' : '— Country *';
+  if (opt0) opt0.textContent = localize({ es: '? Pa?s *', en: '? Country *' });
  }
  const addrState = document.getElementById('addrState');
  if (addrState) {
   const opt0 = addrState.querySelector('option[value=""]');
-  if (opt0) opt0.textContent = currentLang === 'es' ? '— Estado *' : '— State *';
+  if (opt0) opt0.textContent = localize({ es: '? Estado *', en: '? State *' });
  }
  document.querySelectorAll('.lang-toggle button').forEach(b => {
   b.classList.toggle('active', b.dataset.lang === currentLang);
  });
- document.documentElement.lang = currentLang === 'es' ? 'es' : 'en';
+ document.documentElement.lang = currentLang;
 }
 
 function setLang(lang) {
+ if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
  currentLang = lang;
- localStorage.setItem('huanyin_lang', lang);
+ siteStorage.setItem('huanyin_lang', lang);
  translateAll();
  if (currentPage === 'home') renderProducts(currentFilter);
  else if (currentPage === 'product' && currentProductId) renderProductPage(currentProductId, currentVariantId);
@@ -2330,7 +2496,7 @@ function trackCartAdd(productId, variantId, qty) {
  window.HuanyinMeta.trackAddToCart({
   currency: currencyLabel(),
   value: formatMetaValue(unitPrice * qty),
-  content_name: product.name[currentLang] || product.name.en,
+  content_name: localize(product.name),
   content_category: product.cat,
   content_ids: [`${productId}:${variantId}`],
   contents: [{ id: `${productId}:${variantId}`, quantity: qty, item_price: formatMetaValue(unitPrice) }],
@@ -2510,9 +2676,9 @@ const products = [
 ];
 
 // ============ CART ============
-let cart = JSON.parse(localStorage.getItem('huanyin_cart') || '[]');
+let cart = JSON.parse(siteStorage.getItem('huanyin_cart') || '[]');
 
-function saveCart() { localStorage.setItem('huanyin_cart', JSON.stringify(cart)); updateCartUI(); }
+function saveCart() { siteStorage.setItem('huanyin_cart', JSON.stringify(cart)); updateCartUI(); }
 
 function getMainCartItemMeta(productId, variantId, qty) {
  const product = products.find(item => item.id === productId);
@@ -2553,7 +2719,7 @@ function normalizeSharedCart() {
   return enriched;
  });
  if (changed) {
-  localStorage.setItem('huanyin_cart', JSON.stringify(cart));
+  siteStorage.setItem('huanyin_cart', JSON.stringify(cart));
  }
 }
 
@@ -2633,7 +2799,7 @@ function addToCartWithQty(productId, variantId) {
  const btn = document.querySelector('.pd-actions .btn-moss');
  if (btn) {
   const orig = btn.innerHTML;
-  btn.innerHTML = currentLang === 'es' ? '✓ Agregado!' : '✓ Added!';
+  btn.innerHTML = `? ${localize({ es: 'Agregado!', en: 'Added!' })}`;
   btn.style.background = 'var(--success)';
   setTimeout(() => { navigateBack(); }, 400);
  } else {
@@ -2662,7 +2828,7 @@ function renderCartItems() {
  const container = document.getElementById('cartItems');
  const footer = document.getElementById('cartFooter');
  if (cart.length === 0) {
-  container.innerHTML = `<div class="cart-empty">${currentLang === 'es' ? 'Tu cotización está vacía. Agrega productos desde nuestro catálogo.' : 'Your inquiry is empty. Add products from our catalog.'}</div>`;
+  container.innerHTML = `<div class="cart-empty">${localize({ es: 'Tu cotizaci?n est? vac?a. Agrega productos desde nuestro cat?logo.', en: 'Your inquiry is empty. Add products from our catalog.' })}</div>`;
   footer.style.display = 'none';
  } else {
   let total = 0;
@@ -2674,9 +2840,9 @@ function renderCartItems() {
    const price = (c.qty >= 120 && v.prices.large) ? v.prices.large : (v.prices.small || v.prices.large || 0);
    total += price * c.qty;
    return `<div class="cart-item">
-    <div class="cart-item-img"><img src="${p.img || PLACEHOLDER_SVG}" alt="${p.name[currentLang]}" loading="lazy" decoding="async" onerror="this.replaceWith(document.createTextNode('${p.icon}'))"></div>
+    <div class="cart-item-img"><img src="${p.img || PLACEHOLDER_SVG}" alt="${localize(p.name)}" loading="lazy" decoding="async" onerror="this.replaceWith(document.createTextNode('${p.icon}'))"></div>
     <div class="cart-item-info">
-     <div class="cart-item-name">${p.name[currentLang]}</div>
+     <div class="cart-item-name">${localize(p.name)}</div>
      <div class="cart-item-variant">${v.name}</div>
      <div class="cart-item-price">${formatPrice(price)}</div>
      <div class="cart-item-qty">
@@ -2700,25 +2866,29 @@ function sendCartToWhatsApp() {
   return;
  }
  if (typeof clarity !== 'undefined') { clarity('event', 'whatsapp_inquiry'); }
- let msg = currentLang === 'es'
-  ? '¡Hola! Solicito una cotización:\n\n📦 Productos:\n'
-  : 'Hello, I would like to request a quotation:\n\n📦 Products:\n';
+ let msg = localize({
+   es: '?Hola! Solicito una cotizaci?n:\n\n?? Productos:\n',
+   en: 'Hello, I would like to request a quotation:\n\n?? Products:\n'
+  });
  cart.forEach(c => {
   const p = products.find(p => p.id === c.productId);
   if (!p) return;
   const v = p.variants.find(v => v.id === c.variantId);
   if (!v) return;
-  const name = p.name[currentLang] || '';
+  const name = localize(p.name) || '';
   const variant = v.name || '';
   const price = (c.qty >= 120 && v.prices.large) ? v.prices.large : (v.prices.small || v.prices.large || 0);
   const priceDisplay = formatPrice(price * c.qty);
   msg += `??${name} ??${variant} ? ${c.qty} ??${priceDisplay}\n`;
  });
- msg += '\n' + (currentLang === 'es' ? '🚚 Datos de envío:' : '🚚 Shipping info:') + '\n';
- msg += (currentLang === 'es' ? `País: ${cartAddress.country}\nEstado: ${cartAddress.state}\nCiudad: ${cartAddress.city}\nC.P.: ${cartAddress.zip}\n` : `Country: ${cartAddress.country}\nState: ${cartAddress.state}\nCity: ${cartAddress.city}\nZip: ${cartAddress.zip}\n`);
- if (cartAddress.fullAddress) msg += (currentLang === 'es' ? `Dirección: ${cartAddress.fullAddress}\n` : `Address: ${cartAddress.fullAddress}\n`);
- if (cartAddress.contactName) msg += (currentLang === 'es' ? `Contacto: ${cartAddress.contactName}\n` : `Contact: ${cartAddress.contactName}\n`);
- msg += '\n' + (currentLang === 'es' ? 'Por favor enviar:\n✅ Cotización de precios (MXN)\n✅ Costo de envío (DDP)\n✅ Tiempo de entrega' : 'Please provide:\n✅ Price quotation (USD)\n✅ Shipping cost (DDP)\n✅ Delivery time');
+ msg += '\n' + localize({ es: '?? Datos de env?o:', en: '?? Shipping info:' }) + '\n';
+  msg += `${localize({ es: 'Pa?s', en: 'Country' })}: ${cartAddress.country}\n${localize({ es: 'Estado', en: 'State' })}: ${cartAddress.state}\n${localize({ es: 'Ciudad', en: 'City' })}: ${cartAddress.city}\n${localize({ es: 'C.P.', en: 'Zip' })}: ${cartAddress.zip}\n`;
+  if (cartAddress.fullAddress) msg += `${localize({ es: 'Direcci?n', en: 'Address' })}: ${cartAddress.fullAddress}\n`;
+  if (cartAddress.contactName) msg += `${localize({ es: 'Contacto', en: 'Contact' })}: ${cartAddress.contactName}\n`;
+  msg += '\n' + localize({
+   es: 'Por favor enviar:\n? Cotizaci?n de precios (MXN)\n? Costo de env?o (DDP)\n? Tiempo de entrega',
+   en: 'Please provide:\n? Price quotation (USD)\n? Shipping cost (DDP)\n? Delivery time'
+  });
  if (window.HuanyinMeta) {
   const totalQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
   const totalValueUsd = cart.reduce((sum, item) => {
@@ -2803,7 +2973,7 @@ function onCountryChange() {
   mexicanStates.forEach(s => {
    const opt = document.createElement('option');
    opt.value = s.name;
-   opt.textContent = s.name + (s.remote ? (currentLang === 'es' ? ' (Costo Extra)' : ' (Extra Cost)') : '');
+   opt.textContent = s.name + (s.remote ? (currentLang === 'es' ? ' (Costo Extra)' : currentLang === 'ms' ? ' (Kos Tambahan)' : ' (Extra Cost)') : '');
    if (s.remote) opt.className = 'remote';
    stateSelect.appendChild(opt);
   });
@@ -2857,9 +3027,10 @@ function handleContactSubmit(e) {
  const company = inputs[1]?.value || '';
  const phone = inputs[3]?.value || '';
  const country = form.querySelector('select')?.value || '';
- const msg = currentLang === 'es'
-  ? `¡Hola! Soy ${name} de ${company} (${country}). Me gustaría recibir información sobre sus productos. Tel: ${phone}`
-  : `Hello! I'm ${name} from ${company} (${country}). I'd like to receive information about your products. Phone: ${phone}`;
+ const msg = localize({
+   es: `?Hola! Soy ${name} de ${company} (${country}). Me gustar?a recibir informaci?n sobre sus productos. Tel: ${phone}`,
+   en: `Hello! I'm ${name} from ${company} (${country}). I'd like to receive information about your products. Phone: ${phone}`
+  });
  if (window.HuanyinMeta) {
   window.HuanyinMeta.trackContact();
  }
@@ -2945,17 +3116,17 @@ function renderProducts(filter) {
   const imgSrc = p.img || PLACEHOLDER_SVG;
   return `<div class="product-card${allOOS ? ' disabled' : ''}" data-pid="${p.id}" data-cat="${p.cat}" onclick="${allOOS ? '' : `navigateToProduct('${p.id}')`}">
    <div class="product-img" style="--product-img-src: url(&quot;${cssImageUrl(imgSrc)}&quot;)">
-    <img class="pi-placeholder" src="${imgSrc}" alt="${p.name[currentLang]}" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER_SVG}'">
+    <img class="pi-placeholder" src="${imgSrc}" alt="${localize(p.name)}" loading="lazy" decoding="async" onerror="this.src='${PLACEHOLDER_SVG}'">
     <div class="product-badge">
      ${p.id === 'airpods-pro-2' ? '<span class="badge badge-best">BESTSELLER</span>' : ''}
      ${p.id === 'airpods-pro-3' ? '<span class="badge badge-new">PREMIUM</span>' : ''}
      ${allOOS ? '<span class="badge badge-oos">0 STOCK</span>' : ''}
     </div>
-    <div class="stock-dot ${stockClass}">${stockText[currentLang]}</div>
+    <div class="stock-dot ${stockClass}">${localize(stockText)}</div>
    </div>
    <div class="product-info">
-    <div class="product-name">${p.name[currentLang]}</div>
-    <div class="product-spec">${p.tagline[currentLang]}</div>
+    <div class="product-name">${localize(p.name)}</div>
+    <div class="product-spec">${localize(p.tagline)}</div>
     <div class="variant-dots">${variantDots}</div>
     <div class="product-bottom">
      <div>
@@ -2968,10 +3139,7 @@ function renderProducts(filter) {
   </div>`;
  }).join('');
 
- // re-translate
- document.querySelectorAll('#productsGrid [data-es][data-en]').forEach(el => {
-  el.innerHTML = el.getAttribute('data-' + currentLang);
- });
+ translateFragment(document.getElementById('productsGrid'));
 }
 
 // ============ PRODUCT DETAIL PAGE RENDER ============
@@ -3009,12 +3177,12 @@ function renderProductPage(productId, variantId) {
    <div id="pdGallerySlide" class="pd-gallery-slide"></div>
    <div id="pdVideoHint" style="position:absolute;left:48px;top:50%;transform:translateY(-50%);z-index:2;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(0,0,0,0.6);color:#8ff0c1;font-size:12px;font-weight:600;pointer-events:none;transition:opacity 0.3s ease;opacity:0;white-space:nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> <span data-es="Video" data-en="Video">Video</span></div>
    <div id="pdGalleryDots" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2"></div>
-   ` : `<img class="pd-placeholder" src="${p.img || PLACEHOLDER_SVG}" alt="${p.name[currentLang]}" loading="lazy" decoding="async" style="width:100%;max-height:420px;object-fit:contain">`}
+   ` : `<img class="pd-placeholder" src="${p.img || PLACEHOLDER_SVG}" alt="${localize(p.name)}" loading="lazy" decoding="async" style="width:100%;max-height:420px;object-fit:contain">`}
   </div>
   <div class="pd-info animate-in">
-   <div class="pd-cat">${catName[currentLang]}</div>
-   <h1>${p.name[currentLang]}</h1>
-   <p class="pd-tagline">${p.tagline[currentLang]}</p>
+   <div class="pd-cat">${localize(catName)}</div>
+   <h1>${localize(p.name)}</h1>
+   <p class="pd-tagline">${localize(p.tagline)}</p>
 
    <div class="variant-selector">
     ${p.variants.map(vr => {
@@ -3023,7 +3191,7 @@ function renderProductPage(productId, variantId) {
     }).join('')}
    </div>
 
-   <table class="specs-table">${Object.entries(specs).map(([k, val]) => `<tr><td>${(specLabels[k] || {es:k,en:k})[currentLang]}</td><td>${val}</td></tr>`).join('')}</table>
+   <table class="specs-table">${Object.entries(specs).map(([k, val]) => `<tr><td>${localize(specLabels[k] || { en: k }, k)}</td><td>${val}</td></tr>`).join('')}</table>
 
    ${(p.cat === 'airpods' || p.id === 'airpods-pro-2' || p.id === 'airpods-pro-3') ? `
    <div class="pack-label" data-es="Empaque" data-en="Packaging">Empaque</div>
@@ -3040,7 +3208,7 @@ function renderProductPage(productId, variantId) {
    <div class="price-tiers">
     ${priceSmall ? `<div class="price-tier" id="tierSmall"><span class="tier-label">Small Box <span data-es="(40 PCS)" data-en="(40 PCS)">(40 PCS)</span></span><span class="tier-price">${formatPrice(priceSmall)} <span class="tier-check">✓</span></span></div>` : ''}
     ${priceLarge ? `<div class="price-tier" id="tierLarge"><span class="tier-label">Large Box <span data-es="(120 PCS+)" data-en="(120 PCS+)">(120 PCS+)</span></span><span class="tier-price">${formatPrice(priceLarge)} <span class="tier-check">✓</span></span></div>` : ''}
-    ${v.priceNote ? `<div class="price-tier"><span class="tier-label"></span><span class="tier-price">${v.priceNote[currentLang]}</span></div>` : ''}
+    ${v.priceNote ? `<div class="price-tier"><span class="tier-label"></span><span class="tier-price">${localize(v.priceNote)}</span></div>` : ''}
    </div>
 
    <div class="pd-total" id="pdTotal">
@@ -3054,8 +3222,8 @@ function renderProductPage(productId, variantId) {
    <div class="pd-stock">
     <span class="sdot ${isOOS ? 'out' : 'in'}"></span>
     ${isOOS
-     ? `<span style="color:var(--danger)">${v.stockNote ? v.stockNote[currentLang] : (currentLang === 'es' ? 'Agotado' : 'Out of Stock')}</span>`
-     : `<span style="color:var(--success)">${currentLang === 'es' ? 'En Stock' : 'In Stock'} — ${v.stock} PCS</span>`
+     ? `<span style="color:var(--danger)">${v.stockNote ? localize(v.stockNote) : localize({ es: 'Agotado', en: 'Out of Stock' })}</span>`
+     : `<span style="color:var(--success)">${localize({ es: 'En Stock', en: 'In Stock' })} - ${v.stock} PCS</span>`
     }
    </div>
 
@@ -3076,14 +3244,8 @@ function renderProductPage(productId, variantId) {
   </div>
  `;
 
- // re-translate product detail
- document.querySelectorAll('#productDetail [data-es][data-en]').forEach(el => {
-  el.innerHTML = el.getAttribute('data-' + currentLang);
- });
- // re-translate back button
- document.querySelectorAll('#pageProduct .btn-back [data-es][data-en]').forEach(el => {
-  el.innerHTML = el.getAttribute('data-' + currentLang);
- });
+ translateFragment(document.getElementById('productDetail'));
+  translateFragment(document.getElementById('pageProduct'));
  // init price display
  setTimeout(updatePriceDisplay, 50);
  if (p.gallery) { window._galleryItems = p.gallery; window._galleryIdx = getInitialGalleryIndex(p.gallery); renderGallerySlide(); setTimeout(function(){ var s=document.getElementById('pdGallerySlide'); if(s)s.style.opacity='1'; }, 50); }
