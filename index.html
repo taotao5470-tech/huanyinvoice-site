@@ -457,6 +457,7 @@ body.page-product .footer, body.page-about .footer { display: none; }
 .cart-addr-inner { padding: 12px 16px 14px; }
 .cart-addr-inner .addr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .cart-addr-inner .addr-row.single { grid-template-columns: 1fr; }
+.cart-addr-inner .addr-row.phone { grid-template-columns: 118px 1fr; }
 .cart-addr-input { width: 100%; padding: 8px 10px; border-radius: var(--radius-xs); border: 1px solid var(--border-dark); background: var(--bg-secondary); color: var(--text-light); font-size: 12px; font-family: inherit; transition: var(--transition); }
 .cart-addr-input:focus { outline: none; border-color: var(--accent-moss); }
 .cart-addr-input::placeholder { color: #555; }
@@ -465,6 +466,7 @@ body.page-product .footer, body.page-about .footer { display: none; }
 .cart-addr-select option { background: var(--bg-secondary); color: var(--text-light); }
 .cart-addr-select option.remote { color: #777; }
 .cart-addr-warn { color: var(--warning); font-size: 10px; margin-top: 4px; text-align: center; display: none; }
+.cart-addr-panel.open { opacity: 1 !important; pointer-events: auto !important; }
 .addr-send-btn { display: none; width: 100%; padding: 14px; border-radius: 28px; background: var(--whatsapp); color: #fff; font-size: 15px; font-weight: 600; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); margin-top: 12px; cursor: pointer; border: none; }
 .addr-send-btn:hover { background: var(--whatsapp-dark); }
 .floating-cart,
@@ -1440,9 +1442,8 @@ src="https://www.facebook.com/tr?id=1464034677999267&ev=PageView&noscript=1"
 		  <a href="#" onclick="navigateToVerification(event)" data-es="Control de Calidad / Posventa" data-en="3-Level QC / After-Sales">Control de Calidad / Posventa</a>
 		  <a href="#" onclick="navigateToAfterSales(event)" data-es="Consulta Posventa" data-en="After-Sales Lookup">Consulta Posventa</a>
         <div class="lang-toggle">
-   <button data-lang="es">ES</button>
    <button class="active" data-lang="en">EN</button>
-   <button data-lang="ms">MS</button>
+   <button data-lang="ms">MY</button>
   </div>
  </div>
  <div class="nav-actions">
@@ -2092,44 +2093,63 @@ src="https://www.facebook.com/tr?id=1464034677999267&ev=PageView&noscript=1"
 
 <!-- ============ ADDRESS PANEL (floats left of cart) ============ -->
 <div class="cart-addr-panel" id="cartAddrPanel">
- <h4 data-es="Dirección de Envío" data-en="Shipping Address">Dirección de Envío</h4>
+ <h4 data-en="Shipping Address" data-ms="Alamat Penghantaran">Shipping Address</h4>
  <div class="cart-addr-inner">
   <div class="addr-row">
    <select class="cart-addr-select" id="addrCountry" onchange="onCountryChange()">
-    <option value="" data-es="— País *" data-en="— Country *">— País *</option>
-    <option value="Mexico">Mexico</option>
-    <option value="Colombia">Colombia</option>
-    <option value="Chile">Chile</option>
-    <option value="Peru">Peru</option>
-    <option value="Brazil">Brazil</option>
+    <option value="" data-en="Country *" data-ms="Negara *">Country *</option>
+    <option value="Malaysia">Malaysia</option>
+    <option value="Thailand">Thailand</option>
+    <option value="Philippines">Philippines</option>
+    <option value="Indonesia">Indonesia</option>
+    <option value="Vietnam">Vietnam</option>
+    <option value="Singapore">Singapore</option>
+    <option value="Cambodia">Cambodia</option>
+    <option value="Myanmar">Myanmar</option>
+    <option value="Laos">Laos</option>
+    <option value="Brunei">Brunei</option>
    </select>
    <select class="cart-addr-select" id="addrState" onchange="syncAddress()">
-    <option value="" data-es="— Estado *" data-en="— State *">— Estado *</option>
+    <option value="" data-en="Province / State *" data-ms="Negeri / Wilayah *">Province / State *</option>
    </select>
   </div>
   <div class="addr-row">
-   <input class="cart-addr-input" id="addrCity" type="text" oninput="syncAddress()" data-es-placeholder="Ciudad *" data-en-placeholder="City *" placeholder="Ciudad *">
-   <input class="cart-addr-input" id="addrZip" type="text" oninput="syncAddress()" data-es-placeholder="Código Postal *" data-en-placeholder="Postal Code *" placeholder="Código Postal *">
+   <input class="cart-addr-input" id="addrCity" type="text" oninput="syncAddress()" data-en-placeholder="City *" data-ms-placeholder="Bandar *" placeholder="City *">
+   <input class="cart-addr-input" id="addrZip" type="text" oninput="syncAddress()" data-en-placeholder="Postal Code *" data-ms-placeholder="Poskod *" placeholder="Postal Code *">
   </div>
   <div class="addr-row single">
-   <input class="cart-addr-input" id="addrFull" type="text" oninput="syncAddress()" data-es-placeholder="Dirección Completa" data-en-placeholder="Full Address" placeholder="Dirección Completa">
+   <input class="cart-addr-input" id="addrFull" type="text" oninput="syncAddress()" data-en-placeholder="Full Address" data-ms-placeholder="Alamat Penuh" placeholder="Full Address">
   </div>
   <div class="addr-row single">
-   <input class="cart-addr-input" id="addrName" type="text" oninput="syncAddress()" data-es-placeholder="Nombre de Contacto" data-en-placeholder="Contact Name" placeholder="Nombre de Contacto">
+   <input class="cart-addr-input" id="addrName" type="text" oninput="syncAddress()" data-en-placeholder="Contact Name" data-ms-placeholder="Nama Kontak" placeholder="Contact Name">
   </div>
-  <div class="cart-addr-warn" id="addrWarn" data-es="Por favor complete País, Estado, Ciudad y Código Postal." data-en="Please fill in Country, State, City and Postal Code.">Por favor complete País, Estado, Ciudad y Código Postal.</div>
+  <div class="addr-row phone">
+   <select class="cart-addr-select" id="addrPhoneCode" onchange="syncAddress()">
+    <option value="+60">+60 Malaysia</option>
+    <option value="+66">+66 Thailand</option>
+    <option value="+63">+63 Philippines</option>
+    <option value="+62">+62 Indonesia</option>
+    <option value="+84">+84 Vietnam</option>
+    <option value="+65">+65 Singapore</option>
+    <option value="+855">+855 Cambodia</option>
+    <option value="+95">+95 Myanmar</option>
+    <option value="+856">+856 Laos</option>
+    <option value="+673">+673 Brunei</option>
+   </select>
+   <input class="cart-addr-input" id="addrPhone" type="tel" inputmode="tel" oninput="syncAddress()" data-en-placeholder="Contact number *" data-ms-placeholder="Nombor telefon *" placeholder="Contact number *">
+  </div>
+  <div class="cart-addr-warn" id="addrWarn" data-en="Please fill in Country, Province/State, City, Postal Code and Phone." data-ms="Sila isi Negara, Negeri/Wilayah, Bandar, Poskod dan Nombor telefon.">Please fill in Country, Province/State, City, Postal Code and Phone.</div>
   <button class="addr-send-btn" onclick="sendCartToWhatsApp()">
    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.162.578 4.189 1.582 5.94L.24 23.76l5.96-1.302A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-   <span data-es="Enviar por WhatsApp" data-en="Send via WhatsApp">Enviar por WhatsApp</span>
+   <span data-en="Send via WhatsApp" data-ms="Hantar melalui WhatsApp">Send via WhatsApp</span>
   </button>
  </div>
-</div>
-<!-- ============ SCRIPTS ============ -->
+</div><!-- ============ SCRIPTS ============ -->
 <script src="particles.js"></script>
 
 <script>
 // ============ LANGUAGE SYSTEM ============
-const SUPPORTED_LANGS = ['en', 'es', 'ms'];
+const SUPPORTED_LANGS = ['en', 'ms'];
 const memoryStorage = {};
 const siteStorage = {
  getItem(key) {
@@ -2321,13 +2341,13 @@ function translateAll() {
  translateFragment(document);
  const addrCountry = document.getElementById('addrCountry');
  if (addrCountry) {
-  const opt0 = addrCountry.querySelector('option[value=""]');
-  if (opt0) opt0.textContent = localize({ es: '? Pa?s *', en: '? Country *' });
+ const opt0 = addrCountry.querySelector('option[value=""]');
+  if (opt0) translateElement(opt0);
  }
  const addrState = document.getElementById('addrState');
  if (addrState) {
   const opt0 = addrState.querySelector('option[value=""]');
-  if (opt0) opt0.textContent = localize({ es: '? Estado *', en: '? State *' });
+  if (opt0) translateElement(opt0);
  }
  document.querySelectorAll('.lang-toggle button').forEach(b => {
   b.classList.toggle('active', b.dataset.lang === currentLang);
@@ -2918,9 +2938,9 @@ function sendCartToWhatsApp() {
  }
  if (typeof clarity !== 'undefined') { clarity('event', 'whatsapp_inquiry'); }
  let msg = localize({
-   es: '?Hola! Solicito una cotizaci?n:\n\n?? Productos:\n',
-   en: 'Hello, I would like to request a quotation:\n\n?? Products:\n'
-  });
+  en: 'Hello, I would like to request a quotation:\n\nProducts:\n',
+  ms: 'Hello, saya ingin meminta sebut harga:\n\nProduk:\n'
+ });
  cart.forEach(c => {
   const p = products.find(p => p.id === c.productId);
   if (!p) return;
@@ -2930,19 +2950,23 @@ function sendCartToWhatsApp() {
   const variant = v.name || '';
   const price = (c.qty >= 120 && v.prices.large) ? v.prices.large : (v.prices.small || v.prices.large || 0);
   const priceDisplay = formatPrice(price * c.qty);
-  msg += `??${name} ??${variant} ? ${c.qty} ??${priceDisplay}\n`;
+  msg += `- ${name} - ${variant} x ${c.qty} - ${priceDisplay}\n`;
  });
- msg += '\n' + localize({ es: '?? Datos de env?o:', en: '?? Shipping info:' }) + '\n';
-  msg += `${localize({ es: 'Pa?s', en: 'Country' })}: ${cartAddress.country}\n${localize({ es: 'Estado', en: 'State' })}: ${cartAddress.state}\n${localize({ es: 'Ciudad', en: 'City' })}: ${cartAddress.city}\n${localize({ es: 'C.P.', en: 'Zip' })}: ${cartAddress.zip}\n`;
-  if (cartAddress.fullAddress) msg += `${localize({ es: 'Direcci?n', en: 'Address' })}: ${cartAddress.fullAddress}\n`;
-  if (cartAddress.contactName) msg += `${localize({ es: 'Contacto', en: 'Contact' })}: ${cartAddress.contactName}\n`;
-  msg += '\n' + localize({
-   es: 'Por favor enviar:\n? Cotizaci?n de precios (MXN)\n? Costo de env?o (DDP)\n? Tiempo de entrega',
-   en: 'Please provide:\n? Price quotation (USD)\n? Shipping cost (DDP)\n? Delivery time'
-  });
+ msg += '\n' + localize({ en: 'Shipping info:', ms: 'Maklumat penghantaran:' }) + '\n';
+ msg += `${localize({ en: 'Country', ms: 'Negara' })}: ${cartAddress.country}\n`;
+ msg += `${localize({ en: 'Province/State', ms: 'Negeri/Wilayah' })}: ${cartAddress.state}\n`;
+ msg += `${localize({ en: 'City', ms: 'Bandar' })}: ${cartAddress.city}\n`;
+ msg += `${localize({ en: 'Zip', ms: 'Poskod' })}: ${cartAddress.zip}\n`;
+ msg += `${localize({ en: 'Phone', ms: 'Telefon' })}: ${cartAddress.phoneCode} ${cartAddress.phone}\n`;
+ if (cartAddress.fullAddress) msg += `${localize({ en: 'Address', ms: 'Alamat' })}: ${cartAddress.fullAddress}\n`;
+ if (cartAddress.contactName) msg += `${localize({ en: 'Contact', ms: 'Kontak' })}: ${cartAddress.contactName}\n`;
+ msg += '\n' + localize({
+  en: 'Please provide:\n- Price quotation (USD)\n- Shipping cost (DDP)\n- Delivery time',
+  ms: 'Sila berikan:\n- Sebut harga (USD)\n- Kos penghantaran (DDP)\n- Masa penghantaran'
+ });
  if (window.HuanyinMeta) {
   const totalQty = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
-  const totalValueUsd = cart.reduce((sum, item) => {
+  const totalValueUsd = cart.reduce((sum, item) => {
    const product = products.find(p => p.id === item.productId);
    const variant = product?.variants.find(v => v.id === item.variantId);
    const unitPrice = (item.qty >= 120 && variant?.prices.large) ? variant.prices.large : (variant?.prices.small || variant?.prices.large || 0);
@@ -2959,83 +2983,74 @@ function sendCartToWhatsApp() {
  }
  window.open('https://wa.me/85298458605?text=' + encodeURIComponent(msg), '_blank');
 }
-
 function toggleCart() {
  const panelOpen = document.getElementById('cartPanel').classList.toggle('open');
  document.getElementById('cartOverlay').classList.toggle('open');
+ const addrPanel = document.getElementById('cartAddrPanel');
  if (panelOpen && cart.length > 0) {
-  document.getElementById('cartAddrPanel').classList.add('open');
+  addrPanel.classList.add('open');
+  addrPanel.style.opacity = '1';
+  addrPanel.style.pointerEvents = 'auto';
  } else {
-  document.getElementById('cartAddrPanel').classList.remove('open');
+  addrPanel.classList.remove('open');
+  addrPanel.style.opacity = '';
+  addrPanel.style.pointerEvents = '';
  }
 }
 
 // ============ CART ADDRESS ============
-const mexicanStates = [
- { name: 'Aguascalientes', remote: false },
- { name: 'Baja California', remote: false },
- { name: 'Baja California Sur', remote: true },
- { name: 'Campeche', remote: true },
- { name: 'Chiapas', remote: true },
- { name: 'Chihuahua', remote: false },
- { name: 'Ciudad de México', remote: false },
- { name: 'Coahuila', remote: false },
- { name: 'Colima', remote: false },
- { name: 'Durango', remote: false },
- { name: 'Estado de México', remote: false },
- { name: 'Guanajuato', remote: false },
- { name: 'Guerrero', remote: false },
- { name: 'Hidalgo', remote: false },
- { name: 'Jalisco', remote: false },
- { name: 'Michoacán', remote: false },
- { name: 'Morelos', remote: false },
- { name: 'Nayarit', remote: false },
- { name: 'Nuevo León', remote: false },
- { name: 'Oaxaca', remote: false },
- { name: 'Puebla', remote: false },
- { name: 'Querétaro', remote: false },
- { name: 'Quintana Roo', remote: true },
- { name: 'San Luis Potosí', remote: false },
- { name: 'Sinaloa', remote: false },
- { name: 'Sonora', remote: false },
- { name: 'Tabasco', remote: true },
- { name: 'Tamaulipas', remote: false },
- { name: 'Tlaxcala', remote: false },
- { name: 'Veracruz', remote: false },
- { name: 'Yucatán', remote: true },
- { name: 'Zacatecas', remote: false }
-];
-
-const otherStates = {
- Colombia: ['Amazonas','Antioquia','Arauca','Atlántico','Bogotá D.C.','Bolívar','Boyacá','Caldas','Caquetá','Casanare','Cauca','Cesar','Chocó','Córdoba','Cundinamarca','Guainía','Guaviare','Huila','La Guajira','Magdalena','Meta','Nariño','Norte de Santander','Putumayo','Quindío','Risaralda','San Andrés','Santander','Sucre','Tolima','Valle del Cauca','Vaupés','Vichada'],
- Chile: ['Arica y Parinacota','Tarapacá','Antofagasta','Atacama','Coquimbo','Valparaíso','Región Metropolitana','O\'Higgins','Maule','Ñuble','Biobío','Araucanía','Los Ríos','Los Lagos','Aysén','Magallanes'],
- Peru: ['Amazonas','Áncash','Apurímac','Arequipa','Ayacucho','Cajamarca','Callao','Cusco','Huancavelica','Huánuco','Ica','Junín','La Libertad','Lambayeque','Lima','Loreto','Madre de Dios','Moquegua','Pasco','Piura','Puno','San Martín','Tacna','Tumbes','Ucayali'],
- Brazil: ['Acre','Alagoas','Amapá','Amazonas','Bahia','Ceará','Distrito Federal','Espírito Santo','Goiás','Maranhão','Mato Grosso','Mato Grosso do Sul','Minas Gerais','Pará','Paraíba','Paraná','Pernambuco','Piauí','Rio de Janeiro','Rio Grande do Norte','Rio Grande do Sul','Rondônia','Roraima','Santa Catarina','São Paulo','Sergipe','Tocantins']
+const southeastAsiaRegions = {
+ Malaysia: ['Johor','Kedah','Kelantan','Kuala Lumpur','Labuan','Melaka','Negeri Sembilan','Pahang','Penang','Perak','Perlis','Putrajaya','Sabah','Sarawak','Selangor','Terengganu'],
+ Thailand: ['Bangkok','Chiang Mai','Chon Buri','Khon Kaen','Nakhon Ratchasima','Nonthaburi','Pathum Thani','Phuket','Samut Prakan','Songkhla','Surat Thani'],
+ Philippines: ['Metro Manila','Cebu','Davao del Sur','Laguna','Cavite','Bulacan','Rizal','Pampanga','Iloilo','Negros Occidental','Batangas'],
+ Indonesia: ['Jakarta','West Java','Central Java','East Java','Banten','Bali','North Sumatra','South Sulawesi','Riau','East Kalimantan','Yogyakarta'],
+ Vietnam: ['Ho Chi Minh City','Ha Noi','Da Nang','Binh Duong','Dong Nai','Hai Phong','Can Tho','Khanh Hoa','Quang Ninh'],
+ Singapore: ['Central Region','East Region','North Region','North-East Region','West Region'],
+ Cambodia: ['Phnom Penh','Siem Reap','Battambang','Kampong Cham','Preah Sihanouk','Kandal'],
+ Myanmar: ['Yangon','Mandalay','Naypyidaw','Bago','Ayeyarwady','Shan','Mon'],
+ Laos: ['Vientiane Capital','Luang Prabang','Savannakhet','Champasak','Khammouane','Oudomxay'],
+ Brunei: ['Brunei-Muara','Belait','Tutong','Temburong']
 };
 
-let cartAddress = { country: '', state: '', city: '', zip: '', fullAddress: '', contactName: '' };
+const countryPhoneCodes = {
+ Malaysia: '+60',
+ Thailand: '+66',
+ Philippines: '+63',
+ Indonesia: '+62',
+ Vietnam: '+84',
+ Singapore: '+65',
+ Cambodia: '+855',
+ Myanmar: '+95',
+ Laos: '+856',
+ Brunei: '+673'
+};
+
+let cartAddress = { country: '', state: '', city: '', zip: '', fullAddress: '', contactName: '', phoneCode: '+60', phone: '' };
+
+function getStatePlaceholder() {
+ return currentLang === 'ms' ? 'Negeri / Wilayah *' : 'Province / State *';
+}
 
 function onCountryChange() {
  const country = document.getElementById('addrCountry').value;
  const stateSelect = document.getElementById('addrState');
- stateSelect.innerHTML = '<option value="" data-es="— Estado *" data-en="— State *">— Estado *</option>';
+ stateSelect.innerHTML = '';
+ const placeholder = document.createElement('option');
+ placeholder.value = '';
+ placeholder.textContent = getStatePlaceholder();
+ placeholder.setAttribute('data-en', 'Province / State *');
+ placeholder.setAttribute('data-ms', 'Negeri / Wilayah *');
+ stateSelect.appendChild(placeholder);
 
- if (country === 'Mexico') {
-  mexicanStates.forEach(s => {
-   const opt = document.createElement('option');
-   opt.value = s.name;
-   opt.textContent = s.name + (s.remote ? (currentLang === 'es' ? ' (Costo Extra)' : currentLang === 'ms' ? ' (Kos Tambahan)' : ' (Extra Cost)') : '');
-   if (s.remote) opt.className = 'remote';
-   stateSelect.appendChild(opt);
-  });
- } else if (otherStates[country]) {
-  otherStates[country].forEach(s => {
-   const opt = document.createElement('option');
-   opt.value = s;
-   opt.textContent = s;
-   stateSelect.appendChild(opt);
-  });
- }
+ (southeastAsiaRegions[country] || []).forEach(region => {
+  const opt = document.createElement('option');
+  opt.value = region;
+  opt.textContent = region;
+  stateSelect.appendChild(opt);
+ });
+
+ const phoneCode = document.getElementById('addrPhoneCode');
+ if (phoneCode && countryPhoneCodes[country]) phoneCode.value = countryPhoneCodes[country];
  syncAddress();
 }
 
@@ -3046,13 +3061,14 @@ function syncAddress() {
  cartAddress.zip = document.getElementById('addrZip')?.value || '';
  cartAddress.fullAddress = document.getElementById('addrFull')?.value || '';
  cartAddress.contactName = document.getElementById('addrName')?.value || '';
+ cartAddress.phoneCode = document.getElementById('addrPhoneCode')?.value || '';
+ cartAddress.phone = document.getElementById('addrPhone')?.value || '';
  document.getElementById('addrWarn').style.display = 'none';
 }
 
 function isAddressComplete() {
- return cartAddress.country && cartAddress.state && cartAddress.city && cartAddress.zip;
+ return cartAddress.country && cartAddress.state && cartAddress.city && cartAddress.zip && cartAddress.phone;
 }
-
 // ============ AFTER-SALES LOOKUP ============
 function handleAfterSalesLookup(e) {
  e.preventDefault();
